@@ -1,6 +1,9 @@
 import numpy as np
 from .llm_utils import get_client, DEFAULT_EMBEDDING_MODEL
-
+#يطبق EMBBADING
+#يعمل نورماليز للنص
+#يبني عليها INDEX
+#يبحث عن أكثر مقطع مشابه للسؤال
 
 def _normalize(vec):
     vec = np.array(vec, dtype=np.float32)
