@@ -1,18 +1,22 @@
 import re
 from pypdf import PdfReader
 
-
+#دالة تقوم بتنظيف النصوص من الفراغات والعلامات الزائدة 
+#تستقبل متغير من نوع string 
+#ترجع متغير من نوع string
 def clean_text(text: str) -> str:
     if not text:
         return ""
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
-
+#PDFدالة تستخرج النص من 
+#المستخدم يرفع PDF
+#يستطيع الوصول للصفحات في الملف
 def extract_text_from_pdf(file_obj):
     reader = PdfReader(file_obj)
     pages = []
-
+#للمرور على كل الصفحات
     for i, page in enumerate(reader.pages):
         text = page.extract_text() or ""
         text = clean_text(text)
@@ -21,11 +25,12 @@ def extract_text_from_pdf(file_obj):
                 "page_number": i + 1,
                 "text": text
             })
-
+#ترجع النص كامل للصفحة ورقمها
     full_text = "\n\n".join(page["text"] for page in pages)
+    
     return full_text, pages
 
-
+#تقسيم النص الى أجزاء صغيرة 
 def chunk_pages(pages, chunk_size=1200, overlap=200):
     chunks = []
     chunk_id = 0
@@ -33,7 +38,8 @@ def chunk_pages(pages, chunk_size=1200, overlap=200):
     for page in pages:
         text = page["text"]
         page_number = page["page_number"]
-
+        #بداية عملية قص التشنك
+        #max=1 حتى نتجب القيم السالبة
         start = 0
         step = max(chunk_size - overlap, 1)
 
@@ -53,7 +59,7 @@ def chunk_pages(pages, chunk_size=1200, overlap=200):
 
     return chunks
 
-
+#دالة تبني نسخة مختصرة من البحث اذا كان طويل 
 def build_paper_context(full_text: str, max_chars: int = 18000) -> str:
     if len(full_text) <= max_chars:
         return full_text
